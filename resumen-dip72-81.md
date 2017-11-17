@@ -76,7 +76,7 @@ Un ***grupo de control*** (abreviado como cgroup) es una colección de procesos 
 
 **Los grupos de control suministran un mecanismo para**:  
 **Asignar/limitar/priorizar recursos**: CPU, memoria, y dispositivos.  
-No sólo podemos limitar el acceso a CPU como hemos visto sino también a otros recursos como memoria y dispositivos de E/S.
+No sólo podemos limitar el acceso a CPU como hemos visto sino también a otros recursos como memoria y dispositivos de E/S.  
 **Contabilidad**: medir el uso de recursos.  
 Contabilizar el uso de recursos para obtener estadísticas de los mismos.  
 **Aislamiento**: espacios de nombres separados por grupo.  
@@ -124,7 +124,7 @@ El problema de estas dos formas de uso es que no son persistentes en el tiempo, 
 cpu cpuacct devices memory`  
 + Podemos ver los grupos de control con cat /proc/cgroups  
 
-**Ejemplo**: crear dos grupos para asignar tiempo de CPU (tenemos dos aplicaciones, navegadores y reproductores de música. El navegador puede necesitar menos consumo de cpu que los reproductores de música por ello le asignamos menos tiempo de cpu):
+**Ejemplo**: crear dos grupos para asignar tiempo de CPU (tenemos dos aplicaciones, navegadores y reproductores de música. El navegador puede necesitar menos consumo de cpu que los reproductores de música por ello le asignamos menos tiempo de cpu):  
 Creamos el correspondiente subdirectorio en sys/fs/cgroup/cpu:  
 `$ mkdir Navegadores; mkdir multimedia`  
 Asignamos el porcentaje de cpu al grupo escribiendo en el archivo cpu.shares.  
