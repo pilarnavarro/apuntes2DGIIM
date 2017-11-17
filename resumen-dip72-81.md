@@ -122,7 +122,7 @@ El problema de estas dos formas de uso es que no son persistentes en el tiempo, 
 5. Esto nos monta por defecto los siguientes fs:  
 `$ ls -l /sys/fs/cgroup  
 cpu cpuacct devices memory`  
-+ Podemos ver los grupos de control con cat /proc/cgroups  
++ Podemos ver los grupos de control con `cat /proc/cgroups`  
 
 **Ejemplo**: crear dos grupos para asignar tiempo de CPU (tenemos dos aplicaciones, navegadores y reproductores de música. El navegador puede necesitar menos consumo de cpu que los reproductores de música por ello le asignamos menos tiempo de cpu):  
 Creamos el correspondiente subdirectorio en sys/fs/cgroup/cpu:  
