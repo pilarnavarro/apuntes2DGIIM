@@ -74,14 +74,14 @@ Esto permite definir grupos de planificación (los cgroups): Diferentes procesos
 
 Un ***grupo de control*** (abreviado como cgroup) es una colección de procesos que están vinculados por los mismos criterios y asociados con un conjunto de parámetros o límites. Estos grupos son jerárquicos, lo que significa que cada grupo hereda los límites de su grupo padre.  Definen jerarquías en las que se agrupan los procesos de manera que un administrador puede determinar con gran detalle la manera en la que se asignan los recursos  o llevar la contabilidad de los mismos. El kernel proporciona acceso a múltiples controladores (también llamados subsistemas) a través de la interfaz cgroup; por ejemplo, el controlador "memory" limita el uso de la memoria, "cpuacct" contabiliza el uso de CPU, etc. Gracias a los cgroups los recursos de hardware se pueden dividir adecuadamente entre tareas y usuarios, aumentando la eficiencia general.
 
-**Los grupos de control suministran un mecanismo para**:
-**Asignar/limitar/priorizar recursos**: CPU, memoria, y dispositivos.
+**Los grupos de control suministran un mecanismo para**:  
+**Asignar/limitar/priorizar recursos**: CPU, memoria, y dispositivos.  
 No sólo podemos limitar el acceso a CPU como hemos visto sino también a otros recursos como memoria y dispositivos de E/S.
-**Contabilidad**: medir el uso de recursos.
-Contabilizar el uso de recursos para obtener estadísticas de los mismos.
-**Aislamiento**: espacios de nombres separados por grupo.
-**Control**: congelar grupos o hacer checkpoint/restart. Permite congelar una máquina virtual y restaurarla posteriormente.
-**de una colección de procesos.**
+**Contabilidad**: medir el uso de recursos.  
+Contabilizar el uso de recursos para obtener estadísticas de los mismos.  
+**Aislamiento**: espacios de nombres separados por grupo.  
+**Control**: congelar grupos o hacer checkpoint/restart. Permite congelar una máquina virtual y restaurarla posteriormente.  
+**de una colección de procesos.**  
 
 Los Cgroups están organizados jerárquicamente, como los procesos. La diferencia fundamental es que pueden existir muchas jerarquías diferentes de cgroups simultáneamente en un sistema, mientras que  en el modelo de proceso de Linux hay un único árbol de procesos. El modelo de cgroup es uno o más árboles de tareas separados e inconexos .
 Se necesitan múltiples jerarquías separadas de cgroups porque cada jerarquía está conectada a uno o más subsistemas.
@@ -90,14 +90,14 @@ Un *subsistema* (también llamado *controlador de recursos* o simplemente contro
 
 ### Subsistemas disponibles:
 
-**blkio**: este subsistema establece límites en el acceso de entrada y salida hacia y desde dispositivos de bloques, como unidades físicas (disco, USB).
-**CPU**: este subsistema usa el planificador para proporcionar el acceso de las tareas de un cgroup a la CPU.
-**cpuset**: este subsistema asigna CPUs individuales (en un sistema multinúcleo) y nodos de memoria a tareas en un cgroup.
-**cpuacct**: este subsistema genera informes automáticos sobre los recursos de la CPU utilizados por las tareas en un cgroup.
-**Freezer**: suspende o reanuda las tareas en un cgroup.
-**Dispositivos (devices)**:  permite o niega el acceso a los dispositivos a las tareas en un cgroup.
-**Memoria (memory)**: este subsistema establece límites en el uso de memoria por las tareas de un cgroup y genera informes automáticos sobre los recursos de memoria utilizados por esas tareas.
-**net_cls**: etiqueta paquetes de red con un identificador de clase (classid) que permite al controlador de tráfico (tc) identificar los paquetes originados en una tarea de un grupo.
+**blkio**: este subsistema establece límites en el acceso de entrada y salida hacia y desde dispositivos de bloques, como unidades físicas (disco, USB).  
+**CPU**: este subsistema usa el planificador para proporcionar el acceso de las tareas de un cgroup a la CPU.   
+**cpuset**: este subsistema asigna CPUs individuales (en un sistema multinúcleo) y nodos de memoria a tareas en un cgroup.  
+**cpuacct**: este subsistema genera informes automáticos sobre los recursos de la CPU utilizados por las tareas en un cgroup.   
+**Freezer**: suspende o reanuda las tareas en un cgroup.  
+**Dispositivos (devices)**:  permite o niega el acceso a los dispositivos a las tareas en un cgroup.  
+**Memoria (memory)**: este subsistema establece límites en el uso de memoria por las tareas de un cgroup y genera informes automáticos sobre los recursos de memoria utilizados por esas tareas.  
+**net_cls**: etiqueta paquetes de red con un identificador de clase (classid) que permite al controlador de tráfico (tc) identificar los paquetes originados en una tarea de un grupo.  
 **ns**: el subsistema del espacio de nombres.
 
 El subsistema "ns" se agregó en el desarrollo de cgroups para integrar espacios de nombres y grupos de control. Si el cgroup "ns" estaba montado, cada espacio de nombres también crearía un nuevo grupo en la jerarquía de cgroup. Este fue un experimento que luego se consideró que no era adecuado para la API de cgroups y se eliminó del kernel.
@@ -112,32 +112,32 @@ El problema de estas dos formas de uso es que no son persistentes en el tiempo, 
 
 ### Para gestionar los grupos de control con el primer método hacemos lo siguiente:
 
-1. Primero monto un subsistema como si fuera un sistema de archivos (el sistema de archivos que vamos a montar es cgroup). Los subsistemas se habilitan como una opción de montaje (-o subsistema que queremos controlar) de cgroupfs:
+1. Primero monto un subsistema como si fuera un sistema de archivos (el sistema de archivos que vamos a montar es cgroup). Los subsistemas se habilitan como una opción de montaje (-o subsistema que queremos controlar) de cgroupfs:  
 `mount -t cgroup -o$subsistema`
-2. Habilitamos los archivos del subsistema en cada cgroup (creando un directorio):
+2. Habilitamos los archivos del subsistema en cada cgroup (creando un directorio):  
 `/dev/cgroup/migrupo/subsysA.optionB`
-3. Cuando los tenemos definidos podemos verlos en `/proc/cgroups` (aquí están los grupos que se han definido y cómo están configurados)
-4. En Ubuntu, podemos instalarlo con
+3. Cuando los tenemos definidos podemos verlos en `/proc/cgroups` (aquí están los grupos que se han definido y cómo están configurados)  
+4. En Ubuntu, podemos instalarlo con  
 `$ sudo aptitude install cgroups-bin libcgroup1`
-5. Esto nos monta por defecto los siguientes fs:
-`$ ls -l /sys/fs/cgroup
-cpu cpuacct devices memory`
-+ Podemos ver los grupos de control con cat /proc/cgroups
+5. Esto nos monta por defecto los siguientes fs:  
+`$ ls -l /sys/fs/cgroup  
+cpu cpuacct devices memory`  
++ Podemos ver los grupos de control con cat /proc/cgroups  
 
 **Ejemplo**: crear dos grupos para asignar tiempo de CPU (tenemos dos aplicaciones, navegadores y reproductores de música. El navegador puede necesitar menos consumo de cpu que los reproductores de música por ello le asignamos menos tiempo de cpu):
-Creamos el correspondiente subdirectorio en sys/fs/cgroup/cpu:
-`$ mkdir Navegadores; mkdir multimedia`
-Asignamos el porcentaje de cpu al grupo escribiendo en el archivo cpu.shares.
-Escribimos el peso 2048, que es el que le vamos a dar al grupo de los reproductores de música, en este fichero:
-`$ echo 2048 > /sys/fs/cgroup/cpu/multimedia/cpu.shares`
-A los navegadores le asignamos la mitad del peso anterior:
-`$ echo 1024 > /sys/fs/cgroup/cpu/multimedia/cpu.shares`
-Movemos una tarea al cgrupo escribiendo su PID en el archivo tasks.
-`Firefox&` 
-Miro el Pid del navegador con echo $! y lo escribo en el fichero tasks. Los procesos cuyo pid aparezca en este fichero consumirán la mitad de cpu que los que escribamos en el otro fichero
-`echo $! > /sys/fs/cgroup/cpu/navegadores/tasks
-mplayer micancion.mp3&` 
-Los procesos en este fichero consumen más cpu que los del grupo navegadores. El planificador garantiza que tienen le doble de cpu.
-`echo $! > /sys/fs/cgroup/cpu/multimedia/tasks`
+Creamos el correspondiente subdirectorio en sys/fs/cgroup/cpu:  
+`$ mkdir Navegadores; mkdir multimedia`  
+Asignamos el porcentaje de cpu al grupo escribiendo en el archivo cpu.shares.  
+Escribimos el peso 2048, que es el que le vamos a dar al grupo de los reproductores de música, en este fichero:  
+`$ echo 2048 > /sys/fs/cgroup/cpu/multimedia/cpu.shares`  
+A los navegadores le asignamos la mitad del peso anterior:  
+`$ echo 1024 > /sys/fs/cgroup/cpu/multimedia/cpu.shares`  
+Movemos una tarea al cgrupo escribiendo su PID en el archivo tasks.  
+`Firefox&`   
+Miro el Pid del navegador con echo $! y lo escribo en el fichero tasks. Los procesos cuyo pid aparezca en este fichero consumirán la mitad de cpu que los que escribamos en el otro fichero  
+`echo $! > /sys/fs/cgroup/cpu/navegadores/tasks  
+mplayer micancion.mp3&`   
+Los procesos en este fichero consumen más cpu que los del grupo navegadores. El planificador garantiza que tienen le doble de cpu.  
+`echo $! > /sys/fs/cgroup/cpu/multimedia/tasks`  
 
 
